@@ -18,20 +18,23 @@ n=[0:Ts:1];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %Need to fix and comment this better
-function p = triangle_pulse(t, delay, A)
+function p = triangle_pulse(t, shift, A)
 	N = length(t);
 	p = zeros(1,N);
 
-	
-	index = int32(N - delay);
+	% Coordinate for the apex of the pulse triangle
+	apex = N - shift;
 
-
-	for i = (delay+1):int32(index/2 + delay + 1)
-		p(i) = (i-delay)*A * (2/N);
+	% Build the ascending part of the triangle pusle
+	for i = 1:(apex-1)
+		if i >= shift
+	    	p(i) = (i-shift)*A * (2/N);
+	    end
 	end
-
-	for i = int32(index/2+delay):N
-		p(i) = (N-i) * A * (2/N);
+	
+	% Build the descending part of the triangle
+	for i = apex:N
+		p(i) = (N-i + shift) * A * (2/N);
 	end
 end 	
 
