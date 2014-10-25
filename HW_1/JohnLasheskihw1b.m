@@ -5,7 +5,7 @@
 
 % Simple script file for generating and plotting two sine waves X_1 & X_2
 % These waves are then added together and then seprately and jointly passed through system Y
-% to study their linearity
+% to study the linearity of system Y
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -40,7 +40,7 @@ X_2 = amplitude_2 * sin(2 * pi * ft_2 * n + phi_2);
 
 
 
-%y(n) = (-3*x(n))/8;
+% y(n) = (-3*x(n))/8;
 
 % Run the waves X_1 & X_2 through system Y
 Y_1 = (-3 * X_1)/8;
@@ -49,30 +49,29 @@ Y_2 = (-3 * X_2)/8;
 
 % Plot the waves
 
-
 % 'Two Simple Sine Waves'
 subplot(221)
 plot(n,X_1,n,X_2);
 legend('X_1 = sin(2*pi*1*t) (Blue)', 'X_2 = 2*sin(2*pi*2*t + pi/2) (Green)');
-title('Two Simple Sine Waves', 'fontsize', 22);
-xlabel('time t in seconds', 'fontsize', 16);
-ylabel('amplitude', 'fontsize', 16);
+title('Two Simple Sine Waves', 'fontsize', 18);
+xlabel('time t in seconds', 'fontsize', 12);
+ylabel('amplitude', 'fontsize', 12);
 
 % 'X_1 + X_2'
 subplot(222)
 plot(n, (X_1 + X_2));
 %legend('X_1 = sin(2*pi*1*t) (Blue)', 'X_2 = 2*sin(2*pi*2*t + pi/2) (Green)');
-title('X_1 + X_2', 'fontsize', 22);
-xlabel('time t in seconds', 'fontsize', 16);
-ylabel('amplitude', 'fontsize', 16);
+title('X_1 + X_2', 'fontsize', 18);
+xlabel('time t in seconds', 'fontsize', 12);
+ylabel('amplitude', 'fontsize', 12);
 
 % 'Y(X_1) & Y(X_2)'
 subplot(223)
 plot(n,Y_1,n,Y_2);
 legend('Y_1 (Blue)', 'Y_2 (Green)');
-title('Y(X_1) & Y(X_2)', 'fontsize', 22);
-xlabel('time t in seconds', 'fontsize', 16);
-ylabel('amplitude', 'fontsize', 16);
+title('Y(X_1) & Y(X_2)', 'fontsize', 18);
+xlabel('time t in seconds', 'fontsize', 12);
+ylabel('amplitude', 'fontsize', 12);
 
 % 'Y_1 + Y_2 vs. Y(X_1 + X_2)'
 subplot(224)
@@ -80,10 +79,7 @@ plot(n, (Y_1 + Y_2));
 hold on;
 stem(n, ((-3 * (X_1 + X_2))/8))
 legend('Y_1 + Y_2 (Blue)', 'Y(X_2 + X_2) (STEM)');
-title('Y_1 + Y_2 vs. Y(X_1 + X_2)', 'fontsize', 22);
-xlabel('time t in seconds', 'fontsize', 16);
-ylabel('amplitude', 'fontsize', 16);
+title('Y_1 + Y_2 vs. Y(X_1 + X_2)', 'fontsize', 18);
+xlabel('time t in seconds', 'fontsize', 12);
+ylabel('amplitude', 'fontsize', 12);
 hold off;
-
-
-% print('JohnLasheskihw1b.pdf')

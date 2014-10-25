@@ -42,4 +42,3 @@ legend('X_1 = sin(2*pi*1*t) (Blue)', 'X_2 = 2*sin(2*pi*2*t + pi/2) (Green)');
 title('Two Simple Sine Waves', 'fontsize', 22);
 xlabel('time t in seconds', 'fontsize', 16);
 ylabel('amplitude', 'fontsize', 16);
-print('JohnLasheskihw1a.pdf')
