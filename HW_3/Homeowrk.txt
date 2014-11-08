@@ -1,0 +1,32 @@
+The use of Nth-roots of unity, N a power of 2, as sample points in the DFT enables the savings of the FFT.
+
+1. Explain, making use of the complex plane if you wish, why the 8th roots of unity reappear in the 16th roots of unity.
+
+Both 8 and 16 are powers of 2. 2^3 = 8 , and 2^4 = 16.
+
+I was curious and ran a test, this works for powers of 3 too. 3^2 = 9th roots were included in the 3^4 = 27th roots.
+
+
+
+2. Next, consider factorization. If the first, third, fifth and so on 16th roots of unity were factored, so that the first of the 16th roots of unity were factored out, what relation would the other factors bear, to the 8th roots of unity?
+
+The remaining factors of the 16th roots unity entirely compose the 8th roots of unity. The two sets are equal.
+
+
+
+3. Do the 4th roots of unity appear within the 8th roots of unity?
+
+Yes, the 4th roots of unity do appear within the 8th roots of unity.
+
+
+
+
+
+
+4. What has the appearance of these roots, specifically where in the sequence of the Nth roots of unity, the occurrence of these roots of divisors of N is located, got to  do with the permutations that are carried out in the decimation in time and decimation in frequency algorithms?
+
+
+This decomposition process can be applied to any composite (non prime) N, it just so happens that is particularly simple if N is divisible by 2 (and if N is a regular power of 2, the decomposition can be applied repeatedly until the trivial '1 point' transform is reached). The so called Radix 4 algorithms are similar in concept to the Radix 2 algorithms. These are sometimes slightly faster. There is also an efficient algorithm for evaluating the DFT of sequences whose length is a prime number. 
+
+
+5. Explain the meaning of the graph given in Figure 7.3, signal flow diagram.
