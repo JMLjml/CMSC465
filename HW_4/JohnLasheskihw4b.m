@@ -48,33 +48,36 @@ function plot_resizes(test_image, figure_count, scale)
   test_image_bilinear = imresize(test_image, scale, 'bilinear');
   test_image_bicubic = imresize(test_image, scale, 'bicubic');
 
-    % display the scaled image using Nearest
-  figure(figure_count);
+  % create a figure to compare the results
+  figure(figure_count)
+  hold on;
+ 
+  % plot the original image
+  subplot(221)
+  imshow(test_image);
+  set(gca, 'title', 'Orginal Image');
+  
+  % display the scaled image using Nearest
+  subplot(222);
   imshow(test_image_nearest);
   label = strcat("Image Scaled to", scale_label, " Using Nearest");  
   set(gca, 'title', label);
 
   % display the scaled image using Biliear
-  figure(figure_count + 1);
+  subplot(223);
   imshow(test_image_bilinear);
   label = strcat("Image Scaled to", scale_label, " Using Bilinear");  
   set(gca, 'title', label);
 
   % display the scaled image using Bicubic
-  figure(figure_count + 2);
+  subplot(224);
   imshow(test_image_bicubic);
   label = strcat("Image Scaled to", scale_label, " Using Bicubic");  
   set(gca, 'title', label);
 end
 
-
-% plot the original image
-figure(1);
-imshow(test_image);
-set(gca, 'title', 'Orginal Image');
-
 % plot the rescaled images
-plot_resizes(test_image, 2, 1.5);
-plot_resizes(test_image, 5, 2.0);
-plot_resizes(test_image, 8, 3.0);
+plot_resizes(test_image, 1, 1.5);
+plot_resizes(test_image, 2, 2.0);
+plot_resizes(test_image, 3, 3.0);
 
