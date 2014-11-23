@@ -1,3 +1,14 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% John Lasheski
+% JohnLasheskihw4b.m
+% November 20, 2014
+%
+% Compare and contrast the various methods of resizing an image. Uses nearest neighbor,
+% bilinear, ans bicubic methods. Sample image plots are provided for comparison.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+clear all;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % load the image package tools
 pkg load image;
