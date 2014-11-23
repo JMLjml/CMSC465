@@ -3,8 +3,8 @@
 % JohnLasheskihw4c.m
 % November 20, 2014
 %
-% Octave scipt file that explores the nearest, bilinear and bicubic methods of 
-% tranlating, rotating, and shearing an image. sample image is explored and 
+% Octave script file that explores the nearest, bilinear and bicubic methods of 
+% translating, rotating, and shearing an image. sample image is explored and 
 % plots are created to view the differences in the methods.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -28,7 +28,7 @@ binary_image = im2bw(test_image);
 % Usage: 
 %        plot_rotations(binary_image, figure_count, x, y)
 %
-%        Helper function that plots the various translations of the orignial image.
+%        Helper function that plots the various translations of the original image.
 %        It plots the nearest, bilinear and bicubic translations of the oringial image.
 %
 %        binary_image: image under investigation in binary format
@@ -51,7 +51,7 @@ function plot_translations(binary_image, figure_count, x, y)
   % plot the original image
   subplot(221)
   imshow(binary_image);
-  set(gca, 'title', 'Orginal Image');
+  set(gca, 'title', 'Original Image');
   
   % display the translated image using Nearest
   subplot(222);
@@ -59,7 +59,7 @@ function plot_translations(binary_image, figure_count, x, y)
   label = strcat("Image translated (x, y) = (", int2str(x),", ",  int2str(y), ") Using Nearest");  
   set(gca, 'title', label);
 
-  % display the translated image using Biliear
+  % display the translated image using Bilinear
   subplot(223);
   imshow(test_image_bilinear);
   label = strcat("Image translated (x, y) = (", int2str(x),", ", int2str(y), ") Using Bilinear");
@@ -83,8 +83,8 @@ end
 % Usage: 
 %        plot_rotations(test_image, figure_count, degrees)
 %
-%        Helper function that plots the various rotations of the orignial image.
-%        It plots the nearest, bilinear and bicubic rotations of the oringial image.
+%        Helper function that plots the various rotations of the original image.
+%        It plots the nearest, bilinear and bicubic rotations of the original image.
 %
 %        test_image: image under investigation
 %        figure_count: integer used to label the figure windows
@@ -93,7 +93,7 @@ end
 %        Author: John Lasheski
 function plot_rotations(test_image, figure_count, degrees)
   
-  % just some formating for the titles of the plots
+  % just some formatting for the titles of the plots
   if degrees == 30
     degrees_label = " 30 Degrees ";
   elseif degrees == 45
@@ -117,7 +117,7 @@ function plot_rotations(test_image, figure_count, degrees)
   % plot the original image
   subplot(221)
   imshow(test_image);
-  set(gca, 'title', 'Orginal Image');
+  set(gca, 'title', 'Original Image');
   
   % display the rotated image using Nearest
   subplot(222);
@@ -125,7 +125,7 @@ function plot_rotations(test_image, figure_count, degrees)
   label = strcat("Image Rotated", degrees_label, " Using Nearest");  
   set(gca, 'title', label);
 
-  % display the rotated image using Biliear
+  % display the rotated image using Bilinear
   subplot(223);
   imshow(test_image_bilinear);
   label = strcat("Image Rotated", degrees_label, " Using Bilinear");  
@@ -150,8 +150,8 @@ end
 % Usage: 
 %        plot_shears(binary_image, figure_count, axis, alpha)
 %
-%        Helper function that plots the various shears of the orignial image.
-%        It plots the nearest, bilinear and bicubic shears of the oringial image.
+%        Helper function that plots the various shears of the original image.
+%        It plots the nearest, bilinear and bicubic shears of the original image.
 %
 %        binary_image: image under investigation in binary format
 %        figure_count: integer used to label the figure windows
@@ -173,7 +173,7 @@ function plot_shears(binary_image, figure_count, axis, alpha)
   % plot the original image
   subplot(221)
   imshow(binary_image);
-  set(gca, 'title', 'Orginal Image');
+  set(gca, 'title', 'Original Image');
   
   % display the translated image using Nearest
   subplot(222);
@@ -181,7 +181,7 @@ function plot_shears(binary_image, figure_count, axis, alpha)
   label = strcat("Image Sheared Using Nearest");  
   set(gca, 'title', label);
 
-  % display the translated image using Biliear
+  % display the translated image using Bilinear
   subplot(223);
   imshow(test_image_bilinear);
   label = strcat("Image Sheared Using Bilinear");
@@ -198,7 +198,7 @@ end
 
 
 % translate the image to the right by 5 and down by 8
-% further tranlate the image for a more dramatic effect
+% further translate the image for a more dramatic effect
 % plot the results vs the original
 plot_translations(binary_image, 1, 5, -8);
 plot_translations(binary_image, 2, 500, -800);

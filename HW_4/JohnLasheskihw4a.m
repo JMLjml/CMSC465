@@ -3,7 +3,7 @@
 % JohnLasheskihw4a.m
 % November 18, 2014
 %
-% Create a siple function to compute the retinal height of an object under observation and
+% Create a simple function to compute the retinal height of an object under observation and
 % test the function.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -29,6 +29,6 @@ function r = retinal_height(linear_size, distance, nodal_distance)
   r = linear_size / distance * nodal_distance;
 end
 
-r = retinal_height(20, 75, 16)
+r = retinal_height(20, 75, 16);
 printf("The retinal height of a 20m flag at a distance of 17m is %f mm.\n", r);
 

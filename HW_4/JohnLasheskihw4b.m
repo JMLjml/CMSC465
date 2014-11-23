@@ -1,15 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% John Lasheski
-% JohnLasheskihw4b.m
-% November 20, 2014
-%
-% This script reads in an image and then rezies it to 1.5x, 2.0x, and 3.0x its original
-% size using a nearest, bilinear, and bicubic algorithm to comare the results. The 
-% resulting images are plotted for comparrison.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-clear all;
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % load the image package tools
 pkg load image;
 
@@ -24,17 +13,17 @@ test_image = imread("guitar.jpg");
 % Usage: 
 %        plot_resizes(test_image, figure_count, scale)
 %
-%        Helper function that plots the various resize of the orignial image.
-%        It plots the nearest, bilinear and bicubic resizes of the oringial image.
+%        Helper function that plots the various resize of the original image.
+%        It plots the nearest, bilinear and bicubic resizes of the original image.
 %
 %        test_image: image under investigation
-%        figure_count: integer used to lavel the figure windows
+%        figure_count: integer used to label the figure windows
 %        scale: How much to resize the image. Valid sizes are 1.5, 2.0 and 3.0
 %        
 %        Author: John Lasheski
 function plot_resizes(test_image, figure_count, scale)
   
-  % just some formating for the titles of the plots
+  % just some formatting for the titles of the plots
   if scale == 1.5
     scale_label = " 1.5 Times ";
   elseif scale == 2.0
@@ -55,7 +44,7 @@ function plot_resizes(test_image, figure_count, scale)
   % plot the original image
   subplot(221)
   imshow(test_image);
-  set(gca, 'title', 'Orginal Image');
+  set(gca, 'title', 'Original Image');
   
   % display the scaled image using Nearest
   subplot(222);
@@ -63,7 +52,7 @@ function plot_resizes(test_image, figure_count, scale)
   label = strcat("Image Scaled to", scale_label, " Using Nearest");  
   set(gca, 'title', label);
 
-  % display the scaled image using Biliear
+  % display the scaled image using Bilinear
   subplot(223);
   imshow(test_image_bilinear);
   label = strcat("Image Scaled to", scale_label, " Using Bilinear");  
