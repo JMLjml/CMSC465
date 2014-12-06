@@ -1,12 +1,13 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % John Lasheski
 % JohnLasheskihw5.m
 % December 1, 2014
 %
-% Octave script file that test a function that reads in an image and a matrix representing
-% an image filter. The function applies the filter to the image and returns the new modified image.
-% The script tests out the function by calling three filters on an image and displaying the results.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Octave script file that tests a function that reads in an image and a matrix
+% representing an image filter. The function applies the filter to the image
+% and returns the new modified image. The script tests out the function by
+% calling three filters on an image and displaying the results.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all;
 
@@ -14,10 +15,27 @@ clear all;
 pkg load image;
 
 % load our test image into octave
-test_image = imread('owl.jpg');
+BW_test_image = imread('owl.jpg');
+Color_test_image = imread('color_owl.jpg');
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% function [color, success] = check_colour(source)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Usage: 
+%        function [color, success] = check_colour(source)
+%
+%        Checks a source image's dimensions to determine if the image is
+%        a color image or a grey scale image. Return parameter color will be
+%        set to true if the image is a color image. Return parameter success
+%        will be set to false if the image does not have valid dimensions
+%
+%        source = Matrix representing the image we are investigating
+%        
+%        Author: John Lasheski
 function [color, success] = check_colour(source)
   success = true;
 
@@ -26,14 +44,32 @@ function [color, success] = check_colour(source)
     color = false;
   elseif ndims(source) == 3
     color = true;
-  else % source file dimmensions are illegal
-    printf('**ERROR** Illegal Image Dimmensions in Source File.\n');
+  else % source file dimensions are illegal
+    printf('**ERROR** Illegal Image Dimensions in Source File.\n');
     success = false;
     color = false;
   end
 end
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% function [m, n, success] = get_dimensions(source, color)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Usage: 
+%        function [m, n, success] = get_dimensions(source, color)
+%
+%        Checks and returns a source image's dimensions. Return parameters
+%        m and n represent the m rows and n columns of the image size. Return
+%        parameter success will be set to false if the image does not have
+%        valid dimensions.
+%
+%        source = Matrix representing the image we are investigating
+%        color = boolean set to true if the image is a color image
+%        
+%        Author: John Lasheski
 function [m, n, success] = get_dimensions(source, color)
   success = true;
 
@@ -48,33 +84,70 @@ function [m, n, success] = get_dimensions(source, color)
   end
 
   if(color && p != 3)
-    printf('**ERROR** Illegal Image Dimmensions in Source File\n');
+    printf('**ERROR** Illegal Image Dimensions in Source File\n');
     success = false;
   end
 end
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% function [q, success] = check_filter(transform)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Usage: 
+%        function [q, success] = check_filter(transform)
+%
+%        Test and store an image filter's dimensions.
+%        Filter must be a square matrix of [q, q] and q must be an 
+%        odd integer > 1. Return parameter q represent the size of the filter
+%        and return parameter success will be set to false if the filter does
+%        not have valid dimensions.
+%
+%        transform = Matrix representing the image filter we are investigating
+%        
+%        Author: John Lasheski
 function [q, success] = check_filter(transform)
   success = true;
-  % Test and store filter dimmensions
-  % Filter must be a square matrix of [Q, Q] and Q must be odd integer > 1
+  
   [p,q] = size(transform);
 
   if (ndims(transform) != 2)  % The filter is not 2d
-    printf('**ERROR** Illegal Filter Dimmensions\n');
+    printf('**ERROR** Illegal Filter Dimensions\n');
     success = false;
   elseif(p != q)  % The filter is not square
-    printf('**ERROR** Illegal Filter Dimmensions\n');
+    printf('**ERROR** Illegal Filter Dimensions\n');
     success = false;
   elseif(mod(q,2) != 1 || q < 3)  % The filter is not an odd integer > 1
-    printf('**ERROR** Illegal Filter Dimmensions\n');
+    printf('**ERROR** Illegal Filter Dimensions\n');
     success = false;
   end
 end
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% function filtered_image = apply_filter(source, transform)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Usage: 
+%        function filtered_image = apply_filter(source, transform)
+%
+%        Applies and image filter to a source image and returns the newly
+%        created modified image. Function works with both greyscale and
+%        color images. Function calls a number of helper functions to test
+%        and determine the dimensions of the source image and the filter.
+%        The function does not pad the edges, therefore the edges are not
+%        filtered
+%
+%        source = Matrix representing the image we are applying the filter to
+%        transform = Matrix representing the image filter we are investigating
+%        
+%        Author: John Lasheski
 function filtered_image = apply_filter(source, transform)
-  % check the number of dimensions to determine if the image is greyscal or color
+  % check the dimensions to determine if the image is greyscale or color
   [color, success] = check_colour(source);
 
   % the image had a invalid number of dimensions
@@ -90,7 +163,7 @@ function filtered_image = apply_filter(source, transform)
     break;
   end
 
-  % check and make sure the filter is a vald size and shape
+  % check and make sure the filter is a valid size and shape
   [q, success] = check_filter(transform);
 
   % the filter had a invalid number of dimensions
@@ -100,13 +173,13 @@ function filtered_image = apply_filter(source, transform)
 
 
   % create the return image matrix for storing the filtered results
-  % and set RGB to the number of dimensions for later
+  % and set p to the number of dimensions for later
   if color
     filtered_image = zeros(m, n, 3);
-    RGB = 3;
+    p = 3;
   else
     filtered_image = zeros(m, n);
-    RGB = 1;
+    p = 1;
   end
 
 
@@ -119,12 +192,12 @@ function filtered_image = apply_filter(source, transform)
 
   % iterate over the source image and apply the filter
   % Store the filter values in the return image
-  % k itereation will only occur once for greyscale and 
-  % three times for RGB image
+  % k iteration will only occur once for greyscale and 
+  % three times for a RGB image
 
-  % sub is the small portion of the image that we are filtering at that momenet
+  % sub is the small portion of the image that we are filtering at that moment
   
-  for k = 1:RGB
+  for k = 1:p
     for i = (q - half) : (m - half)
       for j = (q - half) : (n - half)
         sub = source([(i-(half)):(i+(half))], [(j-half):(j+half)], k);
@@ -140,20 +213,53 @@ end  % End of apply_filter function
 
 
 % define Test filters
-Low_Pass_3 = repmat(1/9, 3, 3);
 Low_Pass_5 = repmat(1/25, 5, 5);
-Low_Pass_9 = repmat(1/81, 9, 9);
+High_Pass_3 = [0 -1/4 0; -1/4 1.5 -1/4; 0 -1/4 0];
+Edge_3 = [-1 -1 -1; -1 4 -1; -1 -1 -1];
 
-High_Pass_3 = [0 -1/4 0; -1/4 2 -1/4; 0 -1/4 0];
+
+% Apply the filters are store the results
+BW_HP3_result = apply_filter(BW_test_image, High_Pass_3);
+BW_Edge_result = apply_filter(BW_test_image, Edge_3);
+color_result = apply_filter(Color_test_image, Low_Pass_5);
 
 
-result = apply_filter(test_image, High_Pass_3);
+% plot the results for analysis
 
+% BW image with High Pass 3
 figure(1)
 hold on;
 subplot(121)
-imshow(test_image);
+imshow(BW_test_image);
+title('Original Greyscale Image', 'fontsize', 22);
 
 subplot(122)
-imshow(result);
+imshow(BW_HP3_result);
+title('Greyscale Image with High Pass 3 Filter', 'fontsize', 22);
+hold off;
+
+
+% BW image with Motion Blur 5
+figure(2)
+hold on;
+subplot(121)
+imshow(BW_test_image);
+title('Original Greyscale Image', 'fontsize', 22);
+
+subplot(122)
+imshow(BW_Edge_result);
+title('Greyscale Image with Edge 3 Filter', 'fontsize', 22);
+hold off;
+
+
+% Color image with Low_Pass_5
+figure(3)
+hold on;
+subplot(121)
+imshow(Color_test_image);
+title('Original Color Image', 'fontsize', 22);
+
+subplot(122)
+imshow(color_result);
+title('Color Image with Low Pass 5 Filter', 'fontsize', 22);
 hold off;
