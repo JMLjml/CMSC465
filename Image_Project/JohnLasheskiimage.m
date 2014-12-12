@@ -91,6 +91,17 @@ function Letter = create_class(Letter)
 end
 
 
+function count = count_changes(FCC)
+  count = 0;
+  for i = 1 : length(FCC) - 1
+    if(FCC(i) != FCC(i+1))
+      count++;
+    end
+  i++;
+  end
+end
+    
+
 
 function stats = create_stats(stats, Letter, index)
   for i = 1 : 25
