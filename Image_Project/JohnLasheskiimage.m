@@ -114,6 +114,9 @@ function stats = create_stats(stats, Letter, index)
     % stats(index).EulerNumber(i) = Letter(i).EulerNumber;
     stats(index).EulerNumber(i) = Letter(i).EulerNumber.EulerNumber;
     stats(index).Extent(i) = Letter(i).Extent;
+
+    stats(index).Count = count_changes(Letter(i).FCC.fcc);
+
     i++;
   end
 
@@ -124,6 +127,7 @@ function stats = create_stats(stats, Letter, index)
   stats(index).mean_Orientation = mean(stats(index).Orientation);
   stats(index).mean_EulerNumber = mean(stats(index).EulerNumber);
   stats(index).mean_Extent = mean(stats(index).Extent);
+  stats(index).mean_Count = mean(stats(index).Count);
 
 end
 
@@ -150,41 +154,30 @@ stats = create_stats(stats, classB, 3);
 % Print the mean values for each of the classification parameters
 % in the minimum distance classifier
 %
-% Turn this into a for loop
-%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+printf('\n*************************************************\n')
+printf('       Mean Values of Data for Training Sets\n');
+printf('*************************************************\n')
+for i = 1 : 3
+  switch(i)
+    case 1
+      printf('\n*** Stats for Training Set J ***\n');
+    case 2
+      printf('\n*** Stats for Training Set O ***\n');
+    case 3
+      printf('\n*** Stats for Training Set B ***\n');
+  end
 
-
-printf('\n*** For Class J ***\n');
-printf('The mean FCC value is: %f\n', stats(1).mean_FCC);
-printf('The mean Area value is %f\n', stats(1).mean_Area);
-printf('The mean Perimeter value is %f\n', stats(1).mean_Perimeter);
-printf('The mean EquivDiameter value is %f\n', stats(1).mean_EquivDiameter);
-printf('The mean Orientation value is %f\n', stats(1).mean_Orientation);
-printf('The mean EulerNumber value is %f\n', stats(1).mean_EulerNumber);
-printf('The mean Extent value is %f\n', stats(1).mean_Extent);
-
-
-
-printf('\n*** For Class O ***\n');
-printf('The mean FCC value is: %f\n', stats(2).mean_FCC);
-printf('The mean Area value is %f\n', stats(2).mean_Area);
-printf('The mean Perimeter value is %f\n', stats(2).mean_Perimeter);
-printf('The mean EquivDiameter value is %f\n', stats(2).mean_EquivDiameter);
-printf('The mean Orientation value is %f\n', stats(2).mean_Orientation);
-printf('The mean EulerNumber value is %f\n', stats(2).mean_EulerNumber);
-printf('The mean Extent value is %f\n', stats(2).mean_Extent);
-
-
-
-printf('\n*** For Class B ***\n');
-printf('The mean FCC value is: %f\n', stats(3).mean_FCC);
-printf('The mean Area value is %f\n', stats(3).mean_Area);
-printf('The mean Perimeter value is %f\n', stats(3).mean_Perimeter);
-printf('The mean EquivDiameter value is %f\n', stats(3).mean_EquivDiameter);
-printf('The mean Orientation value is %f\n', stats(3).mean_Orientation);
-printf('The mean EulerNumber value is %f\n', stats(3).mean_EulerNumber);
-printf('The mean Extent value is %f\n\n', stats(3).mean_Extent);
+  printf('The mean FCC value is: %f\n', stats(i).mean_FCC);
+  printf('The mean Area value is %f\n', stats(i).mean_Area);
+  printf('The mean Perimeter value is %f\n', stats(i).mean_Perimeter);
+  printf('The mean EquivDiameter value is %f\n', stats(i).mean_EquivDiameter);
+  printf('The mean Orientation value is %f\n', stats(i).mean_Orientation);
+  printf('The mean EulerNumber value is %f\n', stats(i).mean_EulerNumber);
+  printf('The mean Extent value is %f\n', stats(i).mean_Extent);
+  printf('The mean Count value is %f\n', stats(i).mean_Count);
+  i++;
+end
 
 
 
@@ -194,72 +187,110 @@ printf('The mean Extent value is %f\n\n', stats(3).mean_Extent);
 %
 % minimum distance classifier section
 %
-% turn this into a function
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% create the weighitngs vector
-W = [1 1 1 1];
 
-% create the classification matrix. Each rwo will represent a class
-% and each colunm stores the mean value of the parameter we are using
-C = zeros(3,4);
+function Test = classify(Letter, Test, stats, Index)
+  % create the weighitngs vector
+  W = [10 .5 .2 .05 .155 .32];
 
-for i = 1 : 3
-  C(i,1) = int8(stats(i).mean_EulerNumber);  % Round to whole numbers
-  C(i,2) = stats(i).mean_Extent;
-  C(i,3) = stats(i).mean_FCC;
-  C(i,4) = stats(i).mean_Perimeter;
-  i++;
-end
+  % create the classification matrix. Each row will represent a class
+  % and each colunm stores the mean value of the parameter we are using
+  C = zeros(3,6);
 
-% apply the weightings
-% C = W .* C;
+  for i = 1 : 3
+    C(i,1) = int8(stats(i).mean_EulerNumber);  % Round to whole numbers
+    C(i,2) = stats(i).mean_Extent;
+    C(i,3) = stats(i).mean_Orientation;
+    C(i,4) = stats(i).mean_Perimeter;
+    C(i,5) = stats(i).mean_FCC;
+    C(i,6) = stats(i).mean_Area;
 
+    i++;
+  end
 
-% I would rather make this a method and call it 3 times
-% itereate over each class
-% for i = 1 : 3
-
-  % itereate through each test case in a given class
-  for j = 1 : 25
+  % count the number of times we claffiy each letter
+  Test(Index).Jcount = 0;
+  Test(Index).Ocount = 0;
+  Test(Index).Bcount = 0;
   
+
+  % itereate through each test case in a given class Letter
+  for j = 1 : 25
     % used to store the distance results
     Distance = zeros(3,1);
 
     % iterate through the three possible classes that could be a match and
     % store the classifcation distance from each in the Distance vector
     for k = 1 : 3
-      
-      % EN = abs(classJ(j).EulerNumber - C(k,1));
-      EN = abs(classJ(j).EulerNumber.EulerNumber - C(k,1));
-      EXT = abs(classJ(j).Extent - C(k,2));
-      FCC = abs(sum(classJ(j).FCC.fcc) - C(k,3));
-      PER = abs(classJ(j).Perimeter - C(k,4));
+      EN = W(1) * abs(Letter(j).EulerNumber.EulerNumber - C(k,1));
+      EXT = W(2) * abs(Letter(j).Extent - C(k,2));
+      FCC = W(5) * abs(sum(Letter(j).FCC.fcc) - C(k,5));
+      PER = W(4) * abs(Letter(j).Perimeter - C(k,4));
+      ORR = W(3) * abs(Letter(j).Orientation - C(k,3));
+      AREA = W(6) * abs(Letter(j).Area - C(k,6));
 
-      Distance(k) = EN + EXT + FCC + PER;
-
+      Distance(k) = EN + EXT + ORR + PER + FCC + AREA;
       k++;
     end
 
-    [M, Index] = min(Distance);
+    % Find the index number of the smallest distance, this is the letter
+    % we identified
+    [M, position] = min(Distance);
 
-
-    switch(Index)
+    % increment the count within the Test structure for the letter identified
+    switch(position)
       case 1
-        printf('Identified Letter J.\n');
+        Test(Index).Jcount++;
       case 2
-        printf('Identified Letter O.\n');
+        Test(Index).Ocount++;
       case 3
-        printf('Identified Letter B.\n');
+        Test(Index).Bcount++;
     end
 
     j++;
   end  % end j for loop
 
-  % i++;
-% end  % end of i for loop
+end  % end of classify function
+
+
+% instantiate Test Structure
+Test = [];
+
+% Call claasify method three times, once for each test class
+Test = classify(classJ, Test, stats, 1);
+Test = classify(classO, Test, stats, 2);
+Test = classify(classB, Test, stats, 3);
+
+Test(1).percent = Test(1).Jcount / 25 * 100;
+Test(2).percent = Test(2).Ocount / 25 * 100;
+Test(3).percent = Test(3).Bcount / 25 * 100;
+
+
+printf('\n*************************************************\n')
+printf('       Results of Classifcation Trials\n');
+printf('*************************************************\n\n')
+printf('*** Results for Training Set J ***\n')
+printf('Identified %d J''s, %d O''s, and %d B''s.\n', Test(1).Jcount,...
+ Test(1).Ocount, Test(1).Bcount);
+printf('Percent Correctly Identified was %d%%.\n\n', Test(1).percent);
+
+printf('*** Results for Training Set O ***\n')
+printf('Identified %d J''s, %d O''s, and %d B''s.\n', Test(2).Jcount,...
+ Test(2).Ocount, Test(2).Bcount);
+printf('Percent Correctly Identified was %d%%.\n\n', Test(2).percent);
+
+printf('*** Results for Training Set B ***\n')
+printf('Identified %d J''s, %d O''s, and %d B''s.\n', Test(3).Jcount,...
+ Test(3).Ocount, Test(3).Bcount);
+printf('Percent Correctly Identified was %d%%.\n\n', Test(3).percent);
+
+
+
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -270,23 +301,21 @@ end
 % convert these all to for loops
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+colors = ['g'; 'r'; 'm'];
+
 
 % FCC vs Area Scatter Plot
 figure(1)
 hold on;
-a = 10;
-scatter(stats(1).FCC, stats(1).Area, a, 'g', 'filled') 
-scatter(stats(1).mean_FCC, stats(1).mean_Area, 20, 'g', 'filled') 
-
-scatter(stats(2).FCC, stats(2).Area, a, 'r', 'filled') 
-scatter(stats(2).mean_FCC, stats(2).mean_Area, 20, 'r', 'filled') 
-
-scatter(stats(3).FCC, stats(3).Area, a, 'm', 'filled') 
-scatter(stats(3).mean_FCC, stats(3).mean_Area, 20, 'm', 'filled')
+for i = 1 : 3
+  scatter(stats(i).FCC, stats(i).Area, colors(i), 'filled');
+  scatter(stats(i).mean_FCC, stats(i).mean_Area, 20, colors(i),...
+    'd', 'linewidth', 2); 
+  i++;
+end
 
 xlabel('Sum of FCC', 'fontsize', 10);
 ylabel('Area', 'fontsize', 10);
-% legend('Class J', 'Class O', 'Class B');
 title('Scatter Plot of FCC vs Area', 'fontsize', 14);
 hold off;
 
@@ -296,19 +325,15 @@ hold off;
 % Perimeter vs Area Scatter Plot
 figure(2)
 hold on;
-a = 10;
-scatter(stats(1).Perimeter, stats(1).Area, a, 'g', 'filled') 
-scatter(stats(1).mean_Perimeter, stats(1).mean_Area, 20, 'g', 'filled') 
-
-scatter(stats(2).Perimeter, stats(2).Area, a, 'r', 'filled') 
-scatter(stats(2).mean_Perimeter, stats(2).mean_Area, 20, 'r', 'filled') 
-
-scatter(stats(3).Perimeter, stats(3).Area, a, 'm', 'filled') 
-scatter(stats(3).mean_Perimeter, stats(3).mean_Area, 20, 'm', 'filled')
+for i = 1 : 3
+  scatter(stats(i).Perimeter, stats(i).Area, colors(i), 'filled'); 
+  scatter(stats(i).mean_Perimeter, stats(i).mean_Area, 20, colors(i),...
+    'd', 'linewidth', 2); 
+  i++;
+end
 
 xlabel('Perimeter', 'fontsize', 10);
 ylabel('Area', 'fontsize', 10);
-% legend('Class J', 'Class O', 'Class B');
 title('Scatter Plot of Perimeter vs Area', 'fontsize', 14);
 hold off;
 
@@ -317,19 +342,15 @@ hold off;
 % EquivDiameter vs Area Scatter Plot
 figure(3)
 hold on;
-a = 10;
-scatter(stats(1).EquivDiameter, stats(1).Area, a, 'g', 'filled') 
-scatter(stats(1).mean_EquivDiameter, stats(1).mean_Area, 20, 'g', 'filled') 
-
-scatter(stats(2).EquivDiameter, stats(2).Area, a, 'r', 'filled') 
-scatter(stats(2).mean_EquivDiameter, stats(2).mean_Area, 20, 'r', 'filled') 
-
-scatter(stats(3).EquivDiameter, stats(3).Area, a, 'm', 'filled') 
-scatter(stats(3).mean_EquivDiameter, stats(3).mean_Area, 20, 'm', 'filled')
+for i =1 : 3
+  scatter(stats(i).EquivDiameter, stats(i).Area, colors(i), 'filled');
+  scatter(stats(i).mean_EquivDiameter, stats(i).mean_Area, 20, colors(i),...
+    'd', 'linewidth', 2); 
+  i++;
+end
 
 xlabel('EquivDiameter', 'fontsize', 10);
 ylabel('Area', 'fontsize', 10);
-% legend('Class J', 'Class O', 'Class B');
 title('Scatter Plot of EquivDiameter vs Area', 'fontsize', 14);
 hold off;
 
@@ -338,79 +359,66 @@ hold off;
 % Orientation vs Area Scatter Plot
 figure(4)
 hold on;
-a = 10;
-scatter(stats(1).Orientation, stats(1).Area, a, 'g', 'filled') 
-scatter(stats(1).mean_Orientation, stats(1).mean_Area, 20, 'g', 'filled') 
-
-scatter(stats(2).Orientation, stats(2).Area, a, 'r', 'filled') 
-scatter(stats(2).mean_Orientation, stats(2).mean_Area, 20, 'r', 'filled') 
-
-scatter(stats(3).Orientation, stats(3).Area, a, 'm', 'filled') 
-scatter(stats(3).mean_Orientation, stats(3).mean_Area, 20, 'm', 'filled')
+for i = 1 : 3
+  scatter(stats(i).Orientation, stats(i).Area, colors(i), 'filled');
+  scatter(stats(i).mean_Orientation, stats(i).mean_Area, 20, colors(i),...
+   'd', 'linewidth', 2);
+  i++;
+end
 
 xlabel('Orientation', 'fontsize', 10);
 ylabel('Area', 'fontsize', 10);
-% legend('Class J', 'Class O', 'Class B');
 title('Scatter Plot of Orientation vs Area', 'fontsize', 14);
 hold off;
+
 
 
 
 % EulerNumber vs Area Scatter Plot
 figure(5)
 hold on;
-a = 10;
-scatter(stats(1).EulerNumber, stats(1).Area, a, 'g', 'filled') 
-scatter(stats(1).mean_EulerNumber, stats(1).mean_Area, 20, 'g', 'filled') 
+for i = 1 : 3
+  scatter(stats(i).EulerNumber, stats(i).Area, colors(i), 'filled');
+  scatter(stats(i).mean_EulerNumber, stats(i).mean_Area, 20, colors(i),...
+   'd', 'linewidth', 2); 
+  i++;
+end
 
-scatter(stats(2).EulerNumber, stats(2).Area, a, 'r', 'filled') 
-scatter(stats(2).mean_EulerNumber, stats(2).mean_Area, 20, 'r', 'filled') 
-
-scatter(stats(3).EulerNumber, stats(3).Area, a, 'm', 'filled') 
-scatter(stats(3).mean_EulerNumber, stats(3).mean_Area, 20, 'm', 'filled')
-
-xlabel('EulerNumber', 'fontsize', 10);
-ylabel('Area', 'fontsize', 10);
-% legend('Class J', 'Class O', 'Class B');
+xlabel('EulerNumber', 'fontsize', 14);
+ylabel('Area', 'fontsize', 14);
 title('Scatter Plot of EulerNumber vs Area', 'fontsize', 14);
 hold off;
-
-
 
 
 
 % Extent vs Area Scatter Plot
 figure(6)
 hold on;
-a = 10;
-scatter(stats(1).Extent, stats(1).Area, a, 'g', 'filled') 
-scatter(stats(1).mean_Extent, stats(1).mean_Area, 20, 'g', 'filled') 
-
-scatter(stats(2).Extent, stats(2).Area, a, 'r', 'filled') 
-scatter(stats(2).mean_Extent, stats(2).mean_Area, 20, 'r', 'filled') 
-
-scatter(stats(3).Extent, stats(3).Area, a, 'm', 'filled') 
-scatter(stats(3).mean_Extent, stats(3).mean_Area, 20, 'm', 'filled')
-
-xlabel('Extent', 'fontsize', 10);
-ylabel('Area', 'fontsize', 10);
-% legend('Class J', 'Class O', 'Class B');
-title('Scatter Plot of Extent vs Area', 'fontsize', 14);
-hold off;
-
-
-figure(7)
-hold on;
-
-colors = ['g'; 'r'; 'm'];
-
 for i = 1 : 3
   scatter(stats(i).Extent, stats(i).Area, colors(i), 'filled');
-  scatter(stats(i).mean_Extent, stats(i).mean_Area, 20, colors(i), 'd', 'LineWidth', 2)
+  scatter(stats(i).mean_Extent, stats(i).mean_Area, 20, colors(i),...
+   'd', 'LineWidth', 2);
   i++;
 end
 
 xlabel('Extent', 'fontsize', 14);
 ylabel('Area', 'fontsize', 14);
 title('Scatter Plot of Extent vs Area', 'fontsize', 14);
+hold off;
+
+
+
+% Count vs Area Scatter Plot
+figure(7)
+hold on;
+for i = 1 : 3
+  scatter(stats(i).Count, stats(i).Area, colors(i), 'filled');
+  scatter(stats(i).mean_Count, stats(i).mean_Area, 20, colors(i),...
+   'd', 'LineWidth', 2);
+  i++;
+end
+
+xlabel('Count', 'fontsize', 14);
+ylabel('Area', 'fontsize', 14);
+title('Scatter Plot of Count vs Area', 'fontsize', 14);
 hold off;
