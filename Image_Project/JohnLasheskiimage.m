@@ -3,7 +3,18 @@
 % JohnLasheskiimage.m
 % December 9, 2014
 %
-% Octave script file that 
+% Octave script file that explores how to use a minimum distance classifier to
+% identify letters within images. Training Classes are supplied for each letter
+% under investigation. This script looks at the letters 'J', 'O', and 'B'.
+% Each training class has 25 image files. The image files are read in and 
+% stored in a custom structure called either classJ, classO or classB.
+% From here a stats function is called that calculates the average data
+% values for each parameter that could be used to classify the images.
+% The mean values are printed to the terminal and scatter plots are created to
+% visualize the different parameters to determine which to use for the
+% classifier. Finally the classifier is called on each image within the three
+% training classes to see how well it works. The results of the classifier
+% are also printed to the terminal.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clear all;
@@ -16,7 +27,7 @@ classJ = [];
 classO = [];
 classB = [];
 
-% used for concat opperation on string names
+% used for concat operation on string names
 extension = '.bmp';
 
 for i = 1:25
@@ -49,18 +60,25 @@ for i = 1:25
 end
 
 
-% run statistics on each class, calculate the mean, and store it in vector
-% of class properties
-% also plot the stats as a scatter plot to check them out
-
-% need to do bwboundary, Freemans code, Boundary length, boundary diameter
-
-% make this into a function or clean it up somehow
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% function Letter = create_class(Letter)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Usage: 
+%        function Letter = create_class(Letter)
+%
+%        Further develops and creates a structure for holding relevant
+%        statistics about a training class. Letter is the basic structure
+%        that was instantiated above with and image file and an index number.
+%        
+%        Letter = structure holding the images we are investigating
+%        
+%        Author: John Lasheski
 function Letter = create_class(Letter)
-  for i = 1 : 25
+  for i = 1 : 25 % repeat for each image in the training class
     
     Letter(i).B = bwboundaries(Letter(i).image);
     Letter(i).boundary = Letter(i).B{1};
@@ -84,13 +102,27 @@ function Letter = create_class(Letter)
     if(!isscalar(Letter(i).EulerNumber))
       Letter(i).EulerNumber = Letter(i).EulerNumber(1);
     end
-
-
     i++;
   end
 end
 
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% function count = count_changes(FCC)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Usage: 
+%        function count = count_changes(FCC)
+%
+%        a simple function for counting the number of direction changes
+%        picked up using Freeman's CH Code
+%        
+%        FCC = vector of fcc directions
+%        
+%        Author: John Lasheski
 function count = count_changes(FCC)
   count = 0;
   for i = 1 : length(FCC) - 1
@@ -100,51 +132,174 @@ function count = count_changes(FCC)
   i++;
   end
 end
-    
 
 
-function stats = create_stats(stats, Letter, index)
-  for i = 1 : 25
-    stats(index).FCC(i) = sum(Letter(i).FCC.fcc);
-    stats(index).Area(i) = Letter(i).Area;
-    stats(index).Orientation(i) = Letter(i).Orientation;
-    stats(index).Perimeter(i) = Letter(i).Perimeter;
-    stats(index).EquivDiameter(i) = Letter(i).EquivDiameter;
-  
-    % stats(index).EulerNumber(i) = Letter(i).EulerNumber;
-    stats(index).EulerNumber(i) = Letter(i).EulerNumber.EulerNumber;
-    stats(index).Extent(i) = Letter(i).Extent;
 
-    stats(index).Count = count_changes(Letter(i).FCC.fcc);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% function stats = create_stats(stats, Letter, Index)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Usage: 
+%        function stats = create_stats(stats, Letter, Index)
+%
+%        Creates a structure for holding relevant statistics about all
+%        of the training classes under investigation. create_stats also
+%        calculates the mean of each data type for later use by the 
+%        minimum distance classifier. 
+%
+%        stats = the structure we are creating, an empty structure should be
+%                passed in on the first call to the function
+%        Letter = structure holding the images we are investigating
+%        Index = start at 1 and count upwards to keep track of each class        
+%        
+%        Author: John Lasheski
+function stats = create_stats(stats, Letter, Index)
+  for i = 1 : 25 % calculate stats for each image
+    stats(Index).FCC(i) = sum(Letter(i).FCC.fcc);
+    stats(Index).Area(i) = Letter(i).Area;
+    stats(Index).Orientation(i) = Letter(i).Orientation;
+    stats(Index).Perimeter(i) = Letter(i).Perimeter;
+    stats(Index).EquivDiameter(i) = Letter(i).EquivDiameter;
+    stats(Index).EulerNumber(i) = Letter(i).EulerNumber.EulerNumber;
+    stats(Index).Extent(i) = Letter(i).Extent;
+    stats(Index).Count = count_changes(Letter(i).FCC.fcc);
     i++;
   end
 
-  stats(index).mean_FCC = mean(stats(index).FCC);
-  stats(index).mean_Area = mean(stats(index).Area);
-  stats(index).mean_Perimeter = mean(stats(index).Perimeter);
-  stats(index).mean_EquivDiameter = mean(stats(index).EquivDiameter);
-  stats(index).mean_Orientation = mean(stats(index).Orientation);
-  stats(index).mean_EulerNumber = mean(stats(index).EulerNumber);
-  stats(index).mean_Extent = mean(stats(index).Extent);
-  stats(index).mean_Count = mean(stats(index).Count);
-
+  % calculate the mean values of each stat
+  stats(Index).mean_FCC = mean(stats(Index).FCC);
+  stats(Index).mean_Area = mean(stats(Index).Area);
+  stats(Index).mean_Perimeter = mean(stats(Index).Perimeter);
+  stats(Index).mean_EquivDiameter = mean(stats(Index).EquivDiameter);
+  stats(Index).mean_Orientation = mean(stats(Index).Orientation);
+  stats(Index).mean_EulerNumber = mean(stats(Index).EulerNumber);
+  stats(Index).mean_Extent = mean(stats(Index).Extent);
+  stats(Index).mean_Count = mean(stats(Index).Count);
 end
 
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% function Test = classify(Letter, Test, stats, Index)
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Usage: 
+%        function Test = classify(Letter, Test, stats, Index)
+%
+%        classify is a minimum distance classifier function. It looks
+%        at each of the training classes and all of the sample images.
+%        It compares an individual image's stats vs the mean stats for each 
+%        training class we have studied. It applies a weighting vector W
+%        to weight the various data parameters we use to classification.
+%        The results of the comparisons are tallied and stored in a structure
+%        called Test.
+%
+%        Test = the structure we are creating, an empty structure should be
+%                passed in on the first call to the function
+%        Letter = structure holding the images we are investigating
+%        stats = structure holding the data for each image set
+%        Index = start at 1 and count upwards to keep track of each class        
+%        
+%        Author: John Lasheski
+function Test = classify(Letter, Test, stats, Index)
+  % create the weightings vector
+  W = [10 .5 .2 .05 .155 .32];
+
+  % create the classification matrix. Each row will represent a class
+  % and each column stores the mean value of the parameter we are using
+  C = zeros(3,6);
+
+  for i = 1 : 3
+    C(i,1) = int8(stats(i).mean_EulerNumber);  % Round to whole numbers
+    C(i,2) = stats(i).mean_Extent;
+    C(i,3) = stats(i).mean_Orientation;
+    C(i,4) = stats(i).mean_Perimeter;
+    C(i,5) = stats(i).mean_FCC;
+    C(i,6) = stats(i).mean_Area;
+
+    i++;
+  end
+
+  % count the number of times we classify each letter
+  Test(Index).Jcount = 0;
+  Test(Index).Ocount = 0;
+  Test(Index).Bcount = 0;
+  
+
+  % iterate through each test case in a given class Letter
+  for j = 1 : 25
+    % used to store the distance results
+    Distance = zeros(3,1);
+
+    % iterate through the three possible classes that could be a match and
+    % store the classification distance from each in the Distance vector
+    for k = 1 : 3
+      EN = W(1) * abs(Letter(j).EulerNumber.EulerNumber - C(k,1));
+      EXT = W(2) * abs(Letter(j).Extent - C(k,2));
+      FCC = W(5) * abs(sum(Letter(j).FCC.fcc) - C(k,5));
+      PER = W(4) * abs(Letter(j).Perimeter - C(k,4));
+      ORR = W(3) * abs(Letter(j).Orientation - C(k,3));
+      AREA = W(6) * abs(Letter(j).Area - C(k,6));
+
+      Distance(k) = EN + EXT + ORR + PER + FCC + AREA;
+      k++;
+    end
+
+    % Find the index number of the smallest distance, this is the letter
+    % we identified
+    [M, position] = min(Distance);
+
+    % increment the count within the Test structure for the letter identified
+    switch(position)
+      case 1
+        Test(Index).Jcount++;
+      case 2
+        Test(Index).Ocount++;
+      case 3
+        Test(Index).Bcount++;
+    end
+
+    j++;
+  end  % end j for loop
+end  % end of classify function
 
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Create the classes, the statistics, and run the minimum distance classifier
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Create all of the test classes and then store their statistics in the 
+% stats structure
 classJ = create_class(classJ);
 classO = create_class(classO);
 classB = create_class(classB);
+
+% instantiate the stats structure and create the stats
 stats = [];
 stats = create_stats(stats, classJ, 1);
 stats = create_stats(stats, classO, 2);
 stats = create_stats(stats, classB, 3);
 
+% instantiate the Test Structure
+Test = [];
 
+% Call classify method three times, once for each test class
+Test = classify(classJ, Test, stats, 1);
+Test = classify(classO, Test, stats, 2);
+Test = classify(classB, Test, stats, 3);
+
+% calculate the success ratio for each training class
+Test(1).percent = Test(1).Jcount / 25 * 100;
+Test(2).percent = Test(2).Ocount / 25 * 100;
+Test(3).percent = Test(3).Bcount / 25 * 100;
 
 
 
@@ -182,95 +337,13 @@ end
 
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% minimum distance classifier section
-%
+% print the results from the classification trials
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-function Test = classify(Letter, Test, stats, Index)
-  % create the weighitngs vector
-  W = [10 .5 .2 .05 .155 .32];
-
-  % create the classification matrix. Each row will represent a class
-  % and each colunm stores the mean value of the parameter we are using
-  C = zeros(3,6);
-
-  for i = 1 : 3
-    C(i,1) = int8(stats(i).mean_EulerNumber);  % Round to whole numbers
-    C(i,2) = stats(i).mean_Extent;
-    C(i,3) = stats(i).mean_Orientation;
-    C(i,4) = stats(i).mean_Perimeter;
-    C(i,5) = stats(i).mean_FCC;
-    C(i,6) = stats(i).mean_Area;
-
-    i++;
-  end
-
-  % count the number of times we claffiy each letter
-  Test(Index).Jcount = 0;
-  Test(Index).Ocount = 0;
-  Test(Index).Bcount = 0;
-  
-
-  % itereate through each test case in a given class Letter
-  for j = 1 : 25
-    % used to store the distance results
-    Distance = zeros(3,1);
-
-    % iterate through the three possible classes that could be a match and
-    % store the classifcation distance from each in the Distance vector
-    for k = 1 : 3
-      EN = W(1) * abs(Letter(j).EulerNumber.EulerNumber - C(k,1));
-      EXT = W(2) * abs(Letter(j).Extent - C(k,2));
-      FCC = W(5) * abs(sum(Letter(j).FCC.fcc) - C(k,5));
-      PER = W(4) * abs(Letter(j).Perimeter - C(k,4));
-      ORR = W(3) * abs(Letter(j).Orientation - C(k,3));
-      AREA = W(6) * abs(Letter(j).Area - C(k,6));
-
-      Distance(k) = EN + EXT + ORR + PER + FCC + AREA;
-      k++;
-    end
-
-    % Find the index number of the smallest distance, this is the letter
-    % we identified
-    [M, position] = min(Distance);
-
-    % increment the count within the Test structure for the letter identified
-    switch(position)
-      case 1
-        Test(Index).Jcount++;
-      case 2
-        Test(Index).Ocount++;
-      case 3
-        Test(Index).Bcount++;
-    end
-
-    j++;
-  end  % end j for loop
-
-end  % end of classify function
-
-
-% instantiate Test Structure
-Test = [];
-
-% Call claasify method three times, once for each test class
-Test = classify(classJ, Test, stats, 1);
-Test = classify(classO, Test, stats, 2);
-Test = classify(classB, Test, stats, 3);
-
-Test(1).percent = Test(1).Jcount / 25 * 100;
-Test(2).percent = Test(2).Ocount / 25 * 100;
-Test(3).percent = Test(3).Bcount / 25 * 100;
-
-
 printf('\n*************************************************\n')
-printf('       Results of Classifcation Trials\n');
+printf('       Results of Classification Trials\n');
 printf('*************************************************\n\n')
 printf('*** Results for Training Set J ***\n')
 printf('Identified %d J''s, %d O''s, and %d B''s.\n', Test(1).Jcount,...
@@ -290,15 +363,10 @@ printf('Percent Correctly Identified was %d%%.\n\n', Test(3).percent);
 
 
 
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Print the scatter plots used to determine the weigtings for each
+% Print the scatter plots used to determine the weightings for each
 % classification parameter in the minimum distance classifier
-%
-% convert these all to for loops
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 colors = ['g'; 'r'; 'm'];
@@ -318,7 +386,6 @@ xlabel('Sum of FCC', 'fontsize', 10);
 ylabel('Area', 'fontsize', 10);
 title('Scatter Plot of FCC vs Area', 'fontsize', 14);
 hold off;
-
 
 
 
